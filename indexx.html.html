@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Catalyst Genie. Close the shop. Not the books.</title>
+<meta name="description" content="A team of AI agents that counts, chases and drafts for your outlets. You hold the only button that says yes.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600&family=Big+Shoulders+Display:wght@700;800;900&family=DM+Mono:wght@400;500&family=Noto+Sans+Devanagari:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --peacock:#0B1F1A; --chart:#C6F135; --ivory:#F7F3E8;
+  --t1:#123129; --t2:#2E5A4F; --t3:#5E6B66; --t4:#7FA093; --t5:#C5D3CC;
+  --display:'Big Shoulders Display','Big Shoulders','Arial Narrow',Impact,sans-serif;
+  --sans:'Albert Sans','Noto Sans Devanagari',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'DM Mono',ui-monospace,Menlo,monospace;
+  --nav:64px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--nav) + 8px);-webkit-text-size-adjust:100%}
+body{background:var(--ivory);color:var(--peacock);font-family:var(--sans);font-size:17px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;cursor:pointer}
+a{color:inherit}
+:focus-visible{outline:2px solid currentColor;outline-offset:3px}
+.wrap{width:100%;max-width:1180px;margin:0 auto;padding:0 28px}
+.mono{font-family:var(--mono)}
+.display{font-family:var(--display);font-weight:800;line-height:.9;letter-spacing:-.005em;text-wrap:balance}
+h2.display{font-size:clamp(46px,7vw,104px)}
+.lead{font-size:clamp(18px,1.7vw,22px);max-width:34ch;line-height:1.4}
+.dot{display:inline-block;flex:none;width:10px;height:10px;border-radius:50%;background:var(--chart)}
+.deep{background:var(--peacock);color:var(--ivory)}
+.deep .muted{color:#9DB5AA}
+.muted{color:var(--t3)}
+.small{font-size:14px}
+
+.mark{font-family:var(--display);font-weight:800;font-size:26px;line-height:1;text-decoration:none;display:inline-flex;align-items:flex-end}
+.mark i{display:inline-block;width:.2em;height:.2em;background:var(--chart);margin-left:.06em;margin-bottom:.04em}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 26px;font-weight:600;font-size:16px;text-decoration:none;border:1.5px solid var(--ivory);background:var(--ivory);color:var(--peacock);border-radius:0;transition:background-color .2s ease-out,color .2s ease-out}
+.btn:hover{background:transparent;color:var(--ivory)}
+.btn.dk{background:var(--peacock);color:var(--ivory);border-color:var(--peacock)}
+.btn.dk:hover{background:transparent;color:var(--peacock)}
+.btn.sm{min-height:44px;padding:0 20px;font-size:15px}
+.btn.lg{min-height:60px;padding:0 36px;font-size:18px}
+
+@keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
+
+/* nav */
+.nav{position:sticky;top:0;z-index:30;height:var(--nav);background:var(--peacock);color:var(--ivory);border-bottom:1px solid var(--t2)}
+.nav .wrap{height:100%;display:flex;align-items:center;justify-content:space-between;gap:20px}
+
+/* ---------- 1. film hero ---------- */
+.film{height:380vh;height:calc(100svh + 280svh);background:var(--peacock)}
+.stage{position:sticky;top:var(--nav);height:calc(100vh - var(--nav));height:calc(100svh - var(--nav));display:flex;align-items:center;overflow:hidden;color:var(--ivory)}
+.stage-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(32px,6vw,88px);align-items:center}
+.film h1{font-size:clamp(54px,7.4vw,116px);margin:0 0 24px}
+.subs{display:grid;max-width:30ch}
+.subs p{grid-area:1/1;font-size:clamp(18px,1.8vw,22px);line-height:1.35;transition:opacity .2s ease-out}
+.subs .s2{opacity:0}
+.film.late .s1{opacity:0}
+.film.late .s2{opacity:1}
+.copy .btn{margin-top:28px}
+.cue{margin-top:30px;display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:13px;color:#9DB5AA;transition:opacity .2s ease-out}
+.film.started .cue{opacity:0}
+
+.meter{display:flex;align-items:flex-end;gap:16px;margin-bottom:22px}
+.num{font-family:var(--display);font-weight:800;font-size:clamp(84px,11vw,160px);line-height:.78;min-width:2ch;font-variant-numeric:tabular-nums}
+.meter .t{display:grid;gap:2px;padding-bottom:4px}
+.meter .lbl{font-size:18px;line-height:1.2}
+.meter .clock{font-size:13px;color:#9DB5AA}
+.pilewrap{position:relative}
+.pile{list-style:none;padding:0;display:flex;flex-wrap:wrap;gap:10px;transition:opacity .2s ease-out}
+.film.late .pile{opacity:.4}
+.slip{position:relative;padding:10px 14px;background:var(--ivory);color:var(--peacock);font-weight:500;font-size:15px;line-height:1.2;transform:rotate(var(--r,0deg));transition:background-color .2s ease-out,color .2s ease-out}
+.slip:nth-child(3n){--r:-1.2deg}.slip:nth-child(3n+1){--r:.9deg}.slip:nth-child(4n+2){--r:-.4deg}
+.slip .dot{position:absolute;top:-5px;right:-5px;width:12px;height:12px;border:2px solid var(--peacock);transform:scale(0);transition:transform .2s ease-out}
+.slip.done{background:var(--t1);color:var(--t4)}
+.slip.done .dot{transform:scale(1)}
+.need{position:absolute;left:0;right:0;top:50%;translate:0 -44%;background:var(--ivory);color:var(--peacock);border-left:6px solid var(--chart);padding:20px 22px;display:grid;gap:6px;justify-items:start;opacity:0;visibility:hidden;transition:opacity .2s ease-out,translate .2s ease-out,visibility 0s .2s}
+.need.on{opacity:1;visibility:visible;translate:0 -50%;transition-delay:0s}
+.need .who{font-size:12px;color:var(--t3);display:flex;align-items:center;gap:8px}
+.need b{font-size:20px;font-weight:600;line-height:1.2}
+.need p{font-size:15px;color:var(--t3)}
+.need .btn{margin-top:8px}
+
+/* ---------- 2. say the work ---------- */
+.say{padding:clamp(80px,11vw,150px) 0}
+.say-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:clamp(32px,6vw,88px);align-items:center}
+.say h2{margin-bottom:24px}
+.console{background:var(--peacock);color:var(--ivory);padding:clamp(22px,3vw,36px);display:grid;gap:18px}
+.con-head{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:#9DB5AA}
+.con-head .mic{display:flex;align-items:center;gap:10px}
+.said{font-size:clamp(20px,2.2vw,26px);line-height:1.3;min-height:3.9em;font-weight:500}
+.reply{background:var(--ivory);color:var(--peacock);border-left:6px solid var(--chart);padding:18px 20px;display:grid;gap:6px;justify-items:start;min-height:196px;align-content:start;opacity:0;visibility:hidden;transition:opacity .2s ease-out,visibility 0s .2s}
+.reply.on{opacity:1;visibility:visible;transition-delay:0s}
+.reply .who{font-family:var(--mono);font-size:12px;color:var(--t3);display:flex;align-items:center;gap:8px}
+.reply .l1{font-size:18px;line-height:1.35;font-weight:500}
+.reply .en{font-size:14px;color:var(--t3)}
+.reply .btn{margin-top:10px}
+.reply.settled{background:var(--t1);color:var(--ivory)}
+.reply.settled .who,.reply.settled .en{color:#9DB5AA}
+.prompts{list-style:none;padding:0;display:grid;gap:0;border-top:1px solid var(--t2)}
+.prompts button{width:100%;display:grid;grid-template-columns:84px 1fr;gap:12px;align-items:baseline;text-align:left;background:none;border:0;border-bottom:1px solid var(--t2);border-left:4px solid transparent;padding:12px 12px;color:#9DB5AA;transition:background-color .2s ease-out,color .2s ease-out,border-color .2s ease-out}
+.prompts button:hover{background:var(--t1);color:var(--ivory)}
+.prompts button[aria-pressed="true"]{background:var(--t1);color:var(--ivory);border-left-color:var(--chart)}
+.prompts .lg{font-family:var(--mono);font-size:12px}
+.prompts .ph{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ---------- 3. sunday ---------- */
+.sunday{background:#fff;padding:clamp(80px,11vw,150px) 0}
+.sun-head{margin-bottom:clamp(32px,5vw,56px)}
+.sun-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(24px,5vw,80px);align-items:stretch}
+.opts{display:grid;border-top:1px solid var(--peacock)}
+.opt{display:flex;align-items:center;justify-content:space-between;gap:16px;text-align:left;background:none;border:0;border-bottom:1px solid var(--t5);padding:14px 16px;font-family:var(--display);font-weight:800;font-size:clamp(30px,3.6vw,46px);line-height:1;color:var(--peacock);transition:background-color .2s ease-out,color .2s ease-out,padding .2s ease-out}
+.opt:hover{background:var(--ivory)}
+.opt[aria-checked="true"]{background:var(--peacock);color:var(--ivory);padding-left:24px}
+.opt .dot{opacity:0}
+.opt[aria-checked="true"] .dot{opacity:1}
+.trace{background:var(--ivory);padding:clamp(24px,3vw,40px);display:grid;grid-template-rows:auto 1fr;gap:0;align-content:start}
+.trace .row{display:grid;gap:8px;padding-bottom:24px}
+.trace .when{font-family:var(--mono);font-size:13px;color:var(--t3)}
+.trace .big{font-family:var(--display);font-weight:800;font-size:clamp(36px,4.4vw,58px);line-height:.95}
+.trace .row.you{border-bottom:1px solid var(--t5);margin-bottom:24px}
+.trace .row.you p{color:var(--t3);font-size:16px}
+.trace .row.out{padding-bottom:0;opacity:.25;transition:opacity .2s ease-out}
+.trace .row.out.on{opacity:1}
+.trace .agent{display:flex;align-items:center;gap:10px;font-weight:600}
+.trace .agent .dot{transform:scale(0);transition:transform .2s ease-out}
+.trace .row.out.on .agent .dot{transform:scale(1)}
+.trace .row.out p{font-size:18px;line-height:1.35}
+.trace .tap{font-family:var(--mono);font-size:13px;color:var(--t3);margin-top:6px}
+
+/* ---------- 4. receipt ---------- */
+.rc{padding:clamp(80px,11vw,150px) 0}
+.rc-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.9fr);gap:clamp(32px,6vw,88px);align-items:center}
+.rc h2{margin-bottom:24px}
+.rc .ctl{margin-top:36px;display:grid;gap:12px;justify-items:start}
+.rc .status{font-family:var(--mono);font-size:13px;color:#9DB5AA}
+.receipt{background:#fff;color:var(--peacock);padding:28px 26px 24px;font-family:var(--mono);font-size:13.5px;max-width:460px;width:100%;justify-self:center}
+.receipt .top{display:flex;justify-content:space-between;align-items:flex-end;padding-bottom:16px;border-bottom:1px dashed var(--t4);margin-bottom:6px}
+.receipt .top .mark{font-size:24px;color:var(--peacock)}
+.receipt .top span{font-size:12px;color:var(--t3)}
+.line{display:grid;grid-template-columns:12px 44px 1fr auto;gap:10px;align-items:baseline;padding:11px 0;border-bottom:1px dashed var(--t5);opacity:0;transition:opacity .2s ease-out}
+.line.on{opacity:1}
+.line .dot{transform:scale(0);transition:transform .2s ease-out;align-self:center}
+.line.on .dot{transform:scale(1)}
+.line .t{color:var(--t3)}
+.line .x b{font-weight:500}
+.line .x{line-height:1.35}
+.line .a{font-weight:500;text-align:right}
+.receipt.paused .line.on{opacity:.4}
+.receipt.paused .dot{background:transparent;border:1.5px solid var(--peacock)}
+.receipt .sum{display:grid;gap:6px;padding-top:16px}
+.receipt .sum div{display:flex;justify-content:space-between}
+.receipt .foot{margin-top:16px;color:var(--t3);font-size:12px}
+
+/* ---------- 5. flood CTA ---------- */
+.flood{background:var(--chart);color:var(--peacock);padding:clamp(84px,12vw,170px) 0}
+.flood h2{font-size:clamp(56px,10vw,156px);max-width:11ch;margin-bottom:28px}
+.flood p{font-size:clamp(18px,1.8vw,22px);margin-bottom:36px}
+.flood .btn{background:var(--peacock);color:var(--ivory);border-color:var(--peacock)}
+.flood .btn:hover{background:transparent;color:var(--peacock)}
+footer{background:var(--peacock);color:var(--ivory);padding:32px 0 40px}
+footer .wrap{display:flex;flex-wrap:wrap;gap:12px 32px;justify-content:space-between;align-items:center}
+footer span{font-size:14px;color:#9DB5AA}
+
+/* ---------- responsive ---------- */
+@media (max-width:900px){
+  .stage-grid,.say-grid,.sun-grid,.rc-grid{grid-template-columns:1fr}
+  .stage{align-items:flex-start;padding-top:16px}
+  .stage-grid{gap:14px}
+  .film h1{font-size:clamp(40px,11.5vw,64px);margin-bottom:10px}
+  .subs p{font-size:15px}
+  .copy .btn,.cue{display:none}
+  .meter{margin-bottom:12px;gap:12px}
+  .num{font-size:64px}
+  .meter .lbl{font-size:15px}
+  .pile{gap:7px}
+  .slip{padding:6px 10px;font-size:12.5px}
+  .need{padding:14px 16px}
+  .need b{font-size:17px}
+  .need p{font-size:13px}
+}
+@media (max-width:600px){
+  body{font-size:16px}
+  .wrap{padding:0 20px}
+  .prompts button{grid-template-columns:1fr;gap:2px}
+  .line{grid-template-columns:12px 40px 1fr}
+  .line .a{grid-column:3;text-align:left;color:var(--t3)}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{transition:none!important;animation:none!important}
+}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="mark" href="#top" aria-label="Catalyst Genie">Catalyst Genie<i></i></a>
+    <a class="btn sm" href="https://product-ginie-main-gateway.vercel.app/#ask" target="_blank" rel="noopener">Book the audit</a>
+  </div>
+</header>
+
+<main id="top">
+
+<!-- 1. Hero film: scroll to clear the pile -->
+<section class="film" id="film" aria-label="Scroll to hand the work to the Genie">
+  <div class="stage">
+    <div class="wrap stage-grid">
+      <div class="copy">
+        <h1 class="display">Close the shop. Not the books.</h1>
+        <div class="subs">
+          <p class="s1">It's midnight. All of it is yours.</p>
+          <p class="s2">It's morning. One thing is yours.</p>
+        </div>
+        <a class="btn" href="https://product-ginie-main-gateway.vercel.app/#ask" target="_blank" rel="noopener">Book the audit</a>
+        <div class="cue"><span class="dot"></span>Scroll. The Genie does the rest.</div>
+      </div>
+      <div class="board">
+        <div class="meter">
+          <span class="num" id="num">13</span>
+          <div class="t"><span class="lbl" id="lbl">things on your plate</span><span class="clock" id="clock">Tue 23:48</span></div>
+        </div>
+        <div class="pilewrap">
+          <ul class="pile" id="pile">
+            <li class="slip">Chase Northwind, ₹12,480<span class="dot"></span></li>
+            <li class="slip">Tally vs bank: 3 mismatches?<span class="dot"></span></li>
+            <li class="slip">30 reviews, no replies<span class="dot"></span></li>
+            <li class="slip">GST input credit?<span class="dot"></span></li>
+            <li class="slip">Saturday roster<span class="dot"></span></li>
+            <li class="slip">Rent due Thursday<span class="dot"></span></li>
+            <li class="slip">Chiller 3 is making a noise<span class="dot"></span></li>
+            <li class="slip">Tomato up 12%?<span class="dot"></span></li>
+            <li class="slip">Reply to Priya on WhatsApp<span class="dot"></span></li>
+            <li class="slip">Swiggy menu update<span class="dot"></span></li>
+            <li class="slip">Payroll, Friday<span class="dot"></span></li>
+            <li class="slip">Move Friday's delivery<span class="dot"></span></li>
+          </ul>
+          <div class="need" id="need" aria-hidden="true"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 2. Say the work -->
+<section class="say" id="say">
+  <div class="wrap say-grid">
+    <div>
+      <h2 class="display">Say the work. It gets done.</h2>
+      <p class="lead">Hindi, Hinglish or English. It drafts. You tap yes.</p>
+      <p class="small muted" style="margin-top:20px">Tap a line to hear it play.</p>
+    </div>
+    <div class="console" id="console">
+      <div class="con-head"><span class="mic"><span class="dot"></span><span id="state">Listening</span></span><span id="lang">English</span></div>
+      <p class="said" id="said" aria-live="polite"></p>
+      <div class="reply" id="reply" aria-live="polite"></div>
+      <ul class="prompts" id="prompts"></ul>
+    </div>
+  </div>
+</section>
+
+<!-- 3. Sunday -->
+<section class="sunday" id="sunday">
+  <div class="wrap">
+    <div class="sun-head"><h2 class="display">What eats your Sunday?</h2></div>
+    <div class="sun-grid">
+      <div class="opts" id="opts" role="radiogroup" aria-label="What eats your Sunday?"></div>
+      <div class="trace" aria-live="polite">
+        <div class="row you">
+          <span class="when">Sunday, 9 pm</span>
+          <span class="big" id="s-you"></span>
+          <p id="s-you-p"></p>
+        </div>
+        <div class="row out" id="s-out">
+          <span class="when">Monday, 9 am</span>
+          <span class="agent"><span class="dot"></span><span id="s-agent"></span> handled it</span>
+          <p id="s-text"></p>
+          <span class="tap">One tap from you.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4. Receipt -->
+<section class="deep rc" id="receipt">
+  <div class="wrap rc-grid">
+    <div>
+      <h2 class="display">While you slept.</h2>
+      <p class="lead muted">Plain words. Signed and logged. Nothing spends without your yes.</p>
+      <div class="ctl">
+        <button class="btn" id="pause" type="button">Switch every agent to watch-only</button>
+        <span class="status" id="rstatus" aria-live="polite">Agents are working.</span>
+      </div>
+    </div>
+    <div class="receipt" id="rc">
+      <div class="top"><a class="mark" href="#top" tabindex="-1">Catalyst Genie<i></i></a><span>Overnight · Wed</span></div>
+      <div class="line"><span class="dot"></span><span class="t">06:12</span><span class="x"><b>Inventory.</b> Paneer low at Outlet 2. PO drafted.</span><span class="a">₹12,400</span></div>
+      <div class="line"><span class="dot"></span><span class="t">06:40</span><span class="x"><b>Customer.</b> 30 reviews. Replies drafted.</span><span class="a">30</span></div>
+      <div class="line"><span class="dot"></span><span class="t">07:30</span><span class="x"><b>Market.</b> Tomato up 12%. Logged.</span><span class="a">no action</span></div>
+      <div class="line"><span class="dot"></span><span class="t">08:57</span><span class="x"><b>Finance.</b> GST input credit found. Sent to CA.</span><span class="a">₹1.1L</span></div>
+      <div class="line"><span class="dot"></span><span class="t">09:12</span><span class="x"><b>Operations.</b> Chiller, Outlet 3. Technician booked.</span><span class="a">2 pm</span></div>
+      <div class="sum">
+        <div><span>Agent actions</span><b>5</b></div>
+        <div><span>Waiting on you</span><b>2</b></div>
+      </div>
+      <div class="foot">Illustrative. Books updated by Catalyst Genie.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 5. Close -->
+<section class="flood" id="ask">
+  <div class="wrap">
+    <h2 class="display">Bring your messiest month.</h2>
+    <p>Two days on your floor. Zero upfront.</p>
+    <a class="btn lg" href="https://product-ginie-main-gateway.vercel.app/#ask" target="_blank" rel="noopener">Book the audit</a>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <a class="mark" href="#top">Catalyst Genie<i></i></a>
+    <span>Works alongside Tally, Zoho and Excel. Data stays on Indian servers. Bangalore.</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  'use strict';
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function $(id){ return document.getElementById(id); }
+  function pad(n){ return n < 10 ? '0' + n : '' + n; }
+
+  /* ===== 1. Hero film: scroll clears the pile ===== */
+  var film = $('film'), stage = film.querySelector('.stage');
+  var slips = Array.prototype.slice.call(document.querySelectorAll('#pile .slip'));
+  var need = $('need'), num = $('num'), lbl = $('lbl'), clock = $('clock');
+  var order = [2,5,0,8,10,4,7,1,9,3,11,6];
+  var thr = [];
+  order.forEach(function(idx,k){ thr[idx] = 0.06 + k * 0.058; });
+
+  var needOpen = '<div class="who mono"><span class="dot"></span>Inventory · needs you</div><b>Reorder paneer, Outlet 2</b><p>PO drafted for ₹12,400. It expires in two days.</p><button class="btn dk sm" type="button" data-ok="1">Approve</button>';
+  var needDone = '<div class="who mono"><span class="dot"></span>Inventory · done</div><b>Approved.</b><p>PO sent to the vendor. Logged. Go home.</p>';
+  need.innerHTML = needOpen;
+  var approved = false, lastNum = '', lastLbl = '', lastClock = '', lastLate = null, lastStarted = null;
+
+  need.addEventListener('click', function(e){
+    if(e.target.closest('[data-ok]')){ approved = true; need.innerHTML = needDone; update(); }
+  });
+
+  function update(){
+    var rect = film.getBoundingClientRect();
+    var top = parseFloat(getComputedStyle(stage).top) || 0;
+    var range = film.offsetHeight - stage.offsetHeight;
+    var p = Math.min(1, Math.max(0, (top - rect.top) / (range * 0.9)));
+    var done = 0;
+    slips.forEach(function(s,i){
+      var d = p >= thr[i];
+      if(d) done++;
+      if(s._d !== d){ s._d = d; s.classList.toggle('done', d); }
+    });
+    var late = p >= 0.8, started = p > 0.02;
+    if(late !== lastLate){
+      lastLate = late;
+      film.classList.toggle('late', late);
+      need.classList.toggle('on', late);
+      need.setAttribute('aria-hidden', late ? 'false' : 'true');
+      if(!late && approved){ approved = false; need.innerHTML = needOpen; }
+    }
+    if(started !== lastStarted){ lastStarted = started; film.classList.toggle('started', started); }
+
+    var remaining = late ? (approved ? 0 : 1) : 13 - done;
+    var n = String(remaining);
+    var l = remaining === 0 ? 'Nothing waiting.' : remaining === 1 ? 'thing needs you' : 'things on your plate';
+    if(n !== lastNum){ lastNum = n; num.textContent = n; }
+    if(l !== lastLbl){ lastLbl = l; lbl.textContent = l; }
+
+    var t = Math.min(1, p / 0.8);
+    var m = Math.round(1428 + (2021 - 1428) * t);
+    var c = (m >= 1440 ? 'Wed ' : 'Tue ') + pad(Math.floor((m % 1440) / 60)) + ':' + pad(m % 60);
+    if(c !== lastClock){ lastClock = c; clock.textContent = c; }
+  }
+  var ticking = false;
+  function onScroll(){
+    if(ticking) return; ticking = true;
+    requestAnimationFrame(function(){ ticking = false; update(); });
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  window.addEventListener('resize', onScroll);
+  update();
+
+  /* ===== 2. Say the work ===== */
+  var scenes = [
+    {lg:'English', say:"Chase the Northwind invoice and move Friday's delivery to Monday.",
+     l1:'Reminder drafted for Northwind, ₹12,480. Delivery moved to Monday. Customer notified.', en:'',
+     act:'Approve', done:"Sent. Reminder to Northwind, ₹12,480 due Friday. I'll follow up Monday if unpaid.", doneEn:'', code:'en'},
+    {lg:'Hinglish', say:'Kis kis ka udhaar 14 din se zyada late hai? Reminder bhej do.',
+     l1:'3 customers 14 din se late hain, total ₹2.1L. Reminders unki bhasha mein draft hain. Bhejun?',
+     en:'3 customers are 14+ days late, ₹2.1L total. Reminders are drafted in their language. Send?',
+     act:'Send all 3', done:'Bhej diye. Friday tak na aaye to main phir yaad dilaunga.', doneEn:"Sent. I'll nudge again Friday if unpaid.", code:'en'},
+    {lg:'हिन्दी', say:'आउटलेट 2 में पनीर कितने दिन चलेगा? ऑर्डर कर दो।',
+     l1:'पनीर दो दिन में एक्सपायर होगा। ₹12,400 का ऑर्डर तैयार है। मंज़ूर करें?',
+     en:'Paneer expires in two days. A ₹12,400 PO is drafted. Approve?',
+     act:'मंज़ूर करें', done:'ऑर्डर वेंडर को भेज दिया। लॉग हो गया।', doneEn:'PO sent to the vendor. Logged.', code:'hi'},
+    {lg:'English', say:'How did reviews go overnight?',
+     l1:'30 new reviews. Replies are drafted in your tone. None sent.', en:'',
+     act:'Send all 30', done:'30 replies sent. Your two edits are learned.', doneEn:'', code:'en'}
+  ];
+  var said = $('said'), reply = $('reply'), prompts = $('prompts'), langEl = $('lang'), stateEl = $('state');
+  var token = 0, timers = [], current = 0;
+  scenes.forEach(function(s,i){
+    var li = document.createElement('li');
+    var b = document.createElement('button');
+    b.type = 'button'; b.setAttribute('aria-pressed', 'false'); b.setAttribute('data-i', i);
+    b.innerHTML = '<span class="lg"></span><span class="ph"></span>';
+    b.firstChild.textContent = s.lg; b.lastChild.textContent = s.say;
+    li.appendChild(b); prompts.appendChild(li);
+  });
+  function clearTimers(){ timers.forEach(function(t){ clearTimeout(t); clearInterval(t); }); timers = []; }
+  function renderReply(s, settled){
+    reply.className = 'reply on' + (settled ? ' settled' : '');
+    var h = '<div class="who"><span class="dot"></span>Genie · ' + (settled ? '09:14 · done' : '09:14') + '</div>';
+    h += '<p class="l1" lang="' + s.code + '"></p>';
+    var en = settled ? s.doneEn : s.en;
+    if(en) h += '<p class="en"></p>';
+    if(!settled) h += '<button class="btn dk sm" type="button" data-act="1" lang="' + s.code + '"></button>';
+    reply.innerHTML = h;
+    reply.querySelector('.l1').textContent = settled ? s.done : s.l1;
+    if(en) reply.querySelector('.en').textContent = en;
+    var ab = reply.querySelector('[data-act]'); if(ab) ab.textContent = s.act;
+  }
+  function play(i){
+    clearTimers(); token++; current = i;
+    var my = token, s = scenes[i];
+    Array.prototype.forEach.call(prompts.querySelectorAll('button'), function(b){
+      b.setAttribute('aria-pressed', String(+b.getAttribute('data-i') === i));
+    });
+    langEl.textContent = s.lg;
+    reply.className = 'reply'; said.textContent = ''; stateEl.textContent = 'Listening';
+    function finish(){
+      if(my !== token) return;
+      stateEl.textContent = 'Heard';
+      timers.push(setTimeout(function(){ if(my === token) renderReply(s, false); }, reduce ? 0 : 260));
+    }
+    if(reduce){ said.textContent = s.say; finish(); return; }
+    var k = 0, step = Math.max(14, Math.min(32, Math.round(1500 / s.say.length)));
+    var iv = setInterval(function(){
+      if(my !== token){ clearInterval(iv); return; }
+      k++; said.textContent = s.say.slice(0, k);
+      if(k >= s.say.length){ clearInterval(iv); finish(); }
+    }, step);
+    timers.push(iv);
+  }
+  prompts.addEventListener('click', function(e){
+    var b = e.target.closest('button[data-i]'); if(b) play(+b.getAttribute('data-i'));
+  });
+  reply.addEventListener('click', function(e){
+    if(e.target.closest('[data-act]')) renderReply(scenes[current], true);
+  });
+  var sayStarted = false;
+  function startSay(){ if(!sayStarted){ sayStarted = true; play(0); } }
+  if('IntersectionObserver' in window){
+    var io1 = new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting){ startSay(); io1.disconnect(); } });
+    }, {threshold:.45});
+    io1.observe($('console'));
+  } else { startSay(); }
+
+  /* ===== 3. What eats your Sunday ===== */
+  var chores = [
+    {n:'Invoices', you:'Matching every invoice to a bank line, one by one.', ag:'Finance', out:'1,140 invoices matched. 3 mismatches flagged, with the fix.'},
+    {n:'Stock counts', you:'Counting shelves and guessing what runs out.', ag:'Inventory', out:'Paneer at Outlet 2 expires in two days. PO drafted for ₹12,400.'},
+    {n:'Chasing payments', you:'Scrolling WhatsApp to work out who owes what.', ag:'Finance', out:'3 customers are 14+ days late, ₹2.1L. Reminders drafted in their language.'},
+    {n:'Review replies', you:'Writing the thirtieth reply to a stranger.', ag:'Customer', out:'30 replies drafted in your tone. None sent.'},
+    {n:'GST and filings', you:'Hunting for input credit across files.', ag:'Finance', out:'₹1.1L of input credit found. Return is filing-ready for your CA.'},
+    {n:'Rosters', you:"Rebuilding the week around who can't come in.", ag:'People', out:'Roster updated. Two extra delivery hands drafted for Saturday.'}
+  ];
+  var opts = $('opts'), sYou = $('s-you'), sYouP = $('s-you-p'), sOut = $('s-out'), sAgent = $('s-agent'), sText = $('s-text');
+  var sTimer = null;
+  chores.forEach(function(c,i){
+    var b = document.createElement('button');
+    b.type = 'button'; b.className = 'opt'; b.setAttribute('role','radio'); b.setAttribute('data-i', i);
+    b.innerHTML = '<span></span><span class="dot"></span>';
+    b.firstChild.textContent = c.n;
+    opts.appendChild(b);
+  });
+  function pick(i, instant){
+    var c = chores[i];
+    Array.prototype.forEach.call(opts.children, function(b){
+      b.setAttribute('aria-checked', String(+b.getAttribute('data-i') === i));
+    });
+    clearTimeout(sTimer);
+    sYou.textContent = c.n + '.'; sYouP.textContent = c.you;
+    sAgent.textContent = c.ag; sText.textContent = c.out;
+    sOut.classList.remove('on');
+    if(instant || reduce){ sOut.classList.add('on'); }
+    else { sTimer = setTimeout(function(){ sOut.classList.add('on'); }, 420); }
+  }
+  opts.addEventListener('click', function(e){
+    var b = e.target.closest('.opt'); if(b) pick(+b.getAttribute('data-i'), false);
+  });
+  pick(2, true);
+
+  /* ===== 4. Receipt prints, then watch-only toggle ===== */
+  var rc = $('rc'), lines = Array.prototype.slice.call(rc.querySelectorAll('.line'));
+  var printed = false;
+  function print(){
+    if(printed) return; printed = true;
+    lines.forEach(function(l,i){
+      if(reduce){ l.classList.add('on'); return; }
+      setTimeout(function(){ l.classList.add('on'); }, 200 + i * 360);
+    });
+  }
+  if('IntersectionObserver' in window){
+    var io2 = new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting){ print(); io2.disconnect(); } });
+    }, {threshold:.4});
+    io2.observe(rc);
+  } else { print(); }
+  var pauseBtn = $('pause'), rstatus = $('rstatus');
+  pauseBtn.addEventListener('click', function(){
+    var p = rc.classList.toggle('paused');
+    pauseBtn.textContent = p ? 'Let them work again' : 'Switch every agent to watch-only';
+    rstatus.textContent = p ? 'Watch-only. Nothing acts until you say so.' : 'Agents are working.';
+  });
+})();
+</script>
+</body>
+</html>
